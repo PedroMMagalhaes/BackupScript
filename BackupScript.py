@@ -54,7 +54,7 @@ def backupFolder():
     file = open("ConfigLoc.txt", "w+") # Add in the file and folder method
     file.write(dirName)
 
-def backupActionCopyFiles(locationFilesToBackup)
+def backupActionCopyFiles(locationFilesToBackup):
 
 
 def createFileWithConfiguration(configLoc, fileToBackup):
