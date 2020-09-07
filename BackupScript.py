@@ -34,6 +34,14 @@ def firstMenu(optionEntry):
         }
      return switcher.get(optionEntry, "Invalid option")
 
+def filesFolderMenu(optionFilesFolder):
+     switcher = {
+         1: 'Teste',
+         2: backupFolder(),
+         3:  "Exit",
+         
+        }
+     return switcher.get(optionFilesFolder, "Invalid option")
 
 
 def backupFolder():
@@ -46,27 +54,29 @@ def backupFolder():
     file = open("ConfigLoc.txt", "w+") # Add in the file and folder method
     file.write(dirName)
 
-def createFileWithConfiguration(configLoc, fileBackup):
+def backupActionCopyFiles(locationFilesToBackup)
+
+
+def createFileWithConfiguration(configLoc, fileToBackup):
     #print(configLoc)
     #print(fileBackup)
 
-    #MENU FILES OR FOLDER
-    print("Files or Folder???")
+    file = open("ConfigLoc.txt", "w+") # Add in the file and folder method
+    file.write(fileToBackup)
+    
+    print("-----------------------\n")
+    print("Choose the action: \n")
     print("1 - Files")
     print("2 - Folder")
-
-    opt2 = input
-
-    file = open("ConfigLoc.txt", "w+") # Add in the file and folder method
-    file.write(fileBackup)
-    
-    
+    print("3 - Return")
+    print("4 - Exit")
+    optionFilesFolder = input("Option : ")
     #Tkinter - File Dialog
-    Tk().withdraw() 
-    dirName = askdirectory() # show an "Open" dialog box and return the path to the selected directory
-    print(dirName)
+    #Tk().withdraw() 
+    #dirName = askdirectory() # show an "Open" dialog box and return the path to the selected directory
+    #print(dirName)
 
-    return 0
+    return filesFolderMenu(optionFilesFolder)
 # ------------------------------- File Explorer --------------------------------------
 # ---------------------------------------------------------------------
 
