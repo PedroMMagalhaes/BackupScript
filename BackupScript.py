@@ -11,6 +11,7 @@ import os
 import shutil, errno
 from tkinter import Tk  # from tkinter import Tk
 from tkinter.filedialog import askdirectory
+from tkinter.filedialog import askopenfilename
 # from pip._internal import main as pipmain
 
 
@@ -38,13 +39,23 @@ def firstMenu(optionEntry):
 
 def filesFolderMenu(optionFilesFolder):
     switcher = {
-        1: 'Teste',
+        1: backupFiles(),
         2: backupFolder(),
         3: "Exit",
-
     }
     return switcher.get(optionFilesFolder, "Invalid option")
 
+def backupFiles():
+    print("")
+    # Tkinter - File Dialog
+    Tk().withdraw()
+    sourceFiles = askopenfilename()
+    print(sourceFiles)
+    file = open("ConfigLoc.txt", "r")
+    destinationFile = file.readline()
+    print(file.readline())
+    file.close()
+    backupActionCopyFile(sourceFiles, destinationFile)
 
 def backupFolder():
     print("")
@@ -56,17 +67,28 @@ def backupFolder():
     destinationFile = file.readline()
     print(file.readline())
     file.close()
-    backupActionCopyFiles(sourceFiles,destinationFile)
+    backupActionCopyDirectory(sourceFiles,destinationFile)
 
-def backupActionCopyFiles(src,dest):
+def backupActionCopyFile(src,dest):
     try:
-        shutil.copytree(src, dest, copy_function = shutil.copy)
-        # Directories are the same
+        #dest_dir = os.path.join(dest)
+        shutil.copy2(src, dest)
     except shutil.Error as e:
-        print('Directory not copied. Error: %s' % e)
+        print('File not copied. Error: %s' % e)
         # Any error saying that the directory doesn't exist
     except OSError as e:
-        print('Directory not copied. Error: %s' % e)
+        print('File not copied. Error: %s' % e)
+
+def backupActionCopyDirectory(src,dest):
+    try:
+        dest_dir = os.path.join(dest, os.path.basename("Backup"))
+        shutil.copytree(src, dest_dir, symlinks=False, ignore=None)
+        # Directories are the same
+    except shutil.Error as e:
+        print('Files in the directory not copied. Error: %s' % e)
+        # Any error saying that the directory doesn't exist
+    except OSError as e:
+        print('Files in the Directory not copied. Error: %s' % e)
 
 def createFileWithConfiguration(configLoc, fileToBackup):
     # print(configLoc)
@@ -121,15 +143,12 @@ def main():
         # print(optionFirstMenu)
     else:
         print("Backup Configuration not found, create a new one")
-
         print("Please insert your folder destination to save the backups: ")
         Tk().withdraw()
         filesLocation = askdirectory()  # show an "Open" dialog box and return the path to the selected directory
         print(filesLocation)
         currentDirectory = os.path.dirname(os.path.realpath(__file__))
         createFileWithConfiguration(currentDirectory, filesLocation)
-
-
 
 if __name__ == "__main__":
     main()
