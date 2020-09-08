@@ -8,62 +8,73 @@ Backup Script - User input folder ou files to backup then choose the destination
 """
 import pathlib
 import os
-
-from tkinter import Tk     # from tkinter import Tk 
+import shutil, errno
+from tkinter import Tk  # from tkinter import Tk
 from tkinter.filedialog import askdirectory
-#from pip._internal import main as pipmain
+# from pip._internal import main as pipmain
 
 
 def deleteConfigFile():
-   if os.path.exists("ConfigLoc.txt"):
-     os.remove("ConfigLoc.txt")
-     print("*** File deleted !!! ***")
-     main()
-   else:
-     print("The file does not exist")
-     main()    
+    if os.path.exists("ConfigLoc.txt"):
+        os.remove("ConfigLoc.txt")
+        print("*** File deleted !!! ***")
+        main()
+    else:
+        print("The file does not exist")
+        main()
+
 
 def firstMenu(optionEntry):
-     switcher = {
-         1: 'Teste',
-         2: 'Teste',
-         3:  "Teste",
-         4:  "Teste",
-         5:  deleteConfigFile(),
-         6:  "Teste"
-        }
-     return switcher.get(optionEntry, "Invalid option")
+    switcher = {
+        1: 'Teste',
+        2: 'Teste',
+        3: "Teste",
+        4: "Teste",
+        5: deleteConfigFile(),
+        6: "Teste"
+    }
+    return switcher.get(optionEntry, "Invalid option")
+
 
 def filesFolderMenu(optionFilesFolder):
-     switcher = {
-         1: 'Teste',
-         2: backupFolder(),
-         3:  "Exit",
-         
-        }
-     return switcher.get(optionFilesFolder, "Invalid option")
+    switcher = {
+        1: 'Teste',
+        2: backupFolder(),
+        3: "Exit",
+
+    }
+    return switcher.get(optionFilesFolder, "Invalid option")
 
 
 def backupFolder():
-
     print("")
-    #Tkinter - File Dialog
-    Tk().withdraw() 
-    dirName = askdirectory() # show an "Open" dialog box and return the path to the selected directory
-    print(dirName)
-    file = open("ConfigLoc.txt", "w+") # Add in the file and folder method
-    file.write(dirName)
+    # Tkinter - File Dialog
+    Tk().withdraw()
+    sourceFiles = askdirectory()  # show an "Open" dialog box and return the path to the selected directory
+    print(sourceFiles)
+    file = open("ConfigLoc.txt", "r")  # Add in the file and folder method
+    destinationFile = file.readline()
+    print(file.readline())
+    file.close()
+    backupActionCopyFiles(sourceFiles,destinationFile)
 
-def backupActionCopyFiles(locationFilesToBackup):
-
+def backupActionCopyFiles(src,dest):
+    try:
+        shutil.copytree(src, dest, copy_function = shutil.copy)
+        # Directories are the same
+    except shutil.Error as e:
+        print('Directory not copied. Error: %s' % e)
+        # Any error saying that the directory doesn't exist
+    except OSError as e:
+        print('Directory not copied. Error: %s' % e)
 
 def createFileWithConfiguration(configLoc, fileToBackup):
-    #print(configLoc)
-    #print(fileBackup)
+    # print(configLoc)
+    # print(fileBackup)
 
-    file = open("ConfigLoc.txt", "w+") # Add in the file and folder method
+    file = open("ConfigLoc.txt", "w+")  # Add in the file and folder method
     file.write(fileToBackup)
-    
+    file.close()
     print("-----------------------\n")
     print("Choose the action: \n")
     print("1 - Files")
@@ -71,12 +82,14 @@ def createFileWithConfiguration(configLoc, fileToBackup):
     print("3 - Return")
     print("4 - Exit")
     optionFilesFolder = input("Option : ")
-    #Tkinter - File Dialog
-    #Tk().withdraw() 
-    #dirName = askdirectory() # show an "Open" dialog box and return the path to the selected directory
-    #print(dirName)
+    # Tkinter - File Dialog
+    # Tk().withdraw()
+    # dirName = askdirectory() # show an "Open" dialog box and return the path to the selected directory
+    # print(dirName)
 
     return filesFolderMenu(optionFilesFolder)
+
+
 # ------------------------------- File Explorer --------------------------------------
 # ---------------------------------------------------------------------
 
@@ -88,8 +101,8 @@ def main():
     print("::::::::::::::::::::::::::")
     print("")
 
-    #install package for open file dialog
-    #pipmain(['install', '--user', 'easygui'])
+    # install package for open file dialog
+    # pipmain(['install', '--user', 'easygui'])
 
     file = pathlib.Path("ConfigLoc.txt")
     if file.exists():
@@ -105,15 +118,18 @@ def main():
         print("6 - Exit")
         optionFirstMenu = input("Option : ")
         firstMenu(optionFirstMenu)
-        #print(optionFirstMenu)
+        # print(optionFirstMenu)
     else:
         print("Backup Configuration not found, create a new one")
-        
-        filesLocation = input("Please insert your file or folder destination to backup: ")
+
+        print("Please insert your folder destination to save the backups: ")
+        Tk().withdraw()
+        filesLocation = askdirectory()  # show an "Open" dialog box and return the path to the selected directory
+        print(filesLocation)
         currentDirectory = os.path.dirname(os.path.realpath(__file__))
         createFileWithConfiguration(currentDirectory, filesLocation)
 
 
+
 if __name__ == "__main__":
     main()
-
